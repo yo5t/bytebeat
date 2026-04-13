@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BYTEBEAT STUDIO PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#02050e; --panel:rgba(5,12,28,0.95); --border:rgba(0,200,255,0.13);
+  --c1:#00d4ff; --c2:#ff2d78; --c3:#ffd000; --c4:#a259ff; --c5:#00ff9d;
+  --text:#c8e6f5; --text2:rgba(180,220,245,0.42);
+  --g1:0 0 18px rgba(0,212,255,0.5),0 0 44px rgba(0,212,255,0.12);
+  --g2:0 0 18px rgba(255,45,120,0.5); --g3:0 0 14px rgba(255,208,0,0.4);
+  --g4:0 0 14px rgba(0,255,157,0.4);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden;}
+@media(pointer:fine){body{cursor:none;}}
+#cur,#curR{display:none;pointer-events:none;position:fixed;z-index:9999;transform:translate(-50%,-50%);}
+@media(pointer:fine){#cur,#curR{display:block;}}
+#cur{width:9px;height:9px;background:var(--c1);border-radius:50%;box-shadow:var(--g1);}
+#curR{width:28px;height:28px;border:1px solid rgba(0,212,255,0.45);border-radius:50%;z-index:9998;transition:width .12s,height .12s;}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,212,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.022) 1px,transparent 1px);background-size:42px 42px;animation:bgs 28s linear infinite;}
+.bg-vig{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 75% 55% at 50% 0%,rgba(0,70,170,0.08) 0%,transparent 65%),radial-gradient(ellipse 55% 45% at 95% 95%,rgba(162,89,255,0.06) 0%,transparent 55%);}
+@keyframes bgs{to{background-position:0 42px;}}
+.app{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 12px 50px;display:grid;grid-template-rows:auto 1fr auto;min-height:100vh;}
+
+/* HEADER */
+header{padding:16px 0 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.5rem,5vw,2.5rem);letter-spacing:.12em;background:linear-gradient(90deg,var(--c1) 0%,var(--c4) 38%,var(--c2) 68%,var(--c3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 18px rgba(0,212,255,0.4));line-height:1;}
+.logo-sub{font-family:'Cairo',sans-serif;font-size:.6rem;color:var(--text2);letter-spacing:.2em;margin-top:2px;}
+.hpills{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.pill{font-family:'Orbitron',sans-serif;font-size:.52rem;letter-spacing:.13em;padding:4px 11px;border-radius:50px;border:1px solid;white-space:nowrap;cursor:default;}
+.pc{border-color:var(--c1);color:var(--c1);background:rgba(0,212,255,0.06);}
+.pm{border-color:var(--c2);color:var(--c2);background:rgba(255,45,120,0.06);}
+.pg{border-color:var(--c5);color:var(--c5);background:rgba(0,255,157,0.06);}
+.pill-settings{border-color:rgba(255,208,0,0.4);color:var(--c3);background:rgba(255,208,0,0.05);cursor:pointer;transition:all .2s;}
+.pill-settings:hover{background:rgba(255,208,0,0.12);box-shadow:var(--g3);}
+#livePill{transition:all .3s;}
+#livePill.on{background:rgba(0,255,157,0.16);box-shadow:var(--g4);animation:pp 1.2s infinite;}
+@keyframes pp{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* MAIN */
+.main{display:grid;grid-template-columns:1fr;gap:12px;padding:14px 0;}
+@media(min-width:680px){.main{grid-template-columns:1fr 268px;}.cl{grid-column:1;}.cr{grid-column:2;}.fr{grid-column:1/-1;}}
+
+/* PANELS */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:7px;overflow:hidden;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:rgba(0,212,255,0.025);border-bottom:1px solid var(--border);}
+.pt{font-family:'Orbitron',sans-serif;font-size:.56rem;letter-spacing:.18em;color:var(--c1);text-transform:uppercase;}
+.pb{padding:13px;}
+
+/* VIZ */
+.viz-container{position:relative;width:100%;background:#010710;border-bottom:1px solid var(--border);}
+#mainCanvas{width:100%;height:190px;display:block;}
+.viz-scanlines{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.07) 3px,rgba(0,0,0,0.07) 4px);}
+.vc{position:absolute;font-size:.52rem;color:var(--text2);font-family:'Share Tech Mono',monospace;}
+.vc.tl{top:7px;left:9px;}.vc.tr{top:7px;right:9px;}.vc.bl{bottom:7px;left:9px;}.vc.br{bottom:7px;right:9px;}
+.viz-tabs{display:flex;gap:2px;padding:7px 13px;background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.viz-tabs::-webkit-scrollbar{display:none;}
+.vtab{font-family:'Orbitron',sans-serif;font-size:.5rem;letter-spacing:.1em;padding:5px 11px;border:1px solid rgba(0,212,255,0.15);border-radius:3px;background:transparent;color:rgba(0,212,255,0.35);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.vtab:hover{color:var(--c1);border-color:rgba(0,212,255,0.4);}
+.vtab.active{color:var(--bg);background:var(--c1);border-color:var(--c1);box-shadow:var(--g1);}
+
+/* TRANSPORT */
+.transport{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:11px 13px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);}
+.tbtn{font-family:'Orbitron',sans-serif;font-size:.58rem;letter-spacing:.1em;padding:9px 16px;border-radius:4px;border:1px solid;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.tbtn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.08);opacity:0;transition:opacity .15s;}
+.tbtn:hover::after{opacity:1;}.tbtn:active{transform:scale(0.96);}
+.tbtn-play{background:var(--c1);color:var(--bg);border-color:var(--c1);box-shadow:var(--g1);font-weight:700;}
+.tbtn-stop{background:transparent;color:var(--c2);border-color:var(--c2);}
+.tbtn-stop:hover{box-shadow:var(--g2);}
+.tbtn-rec{background:transparent;color:var(--c2);border-color:rgba(255,45,120,0.35);}
+.tbtn-rec.recording{background:var(--c2);color:#fff;border-color:var(--c2);box-shadow:var(--g2);animation:recP .8s infinite;}
+@keyframes recP{0%,100%{box-shadow:var(--g2)}50%{box-shadow:none}}
+.tbtn-dl{background:transparent;color:var(--c3);border-color:rgba(255,208,0,0.3);}
+.tbtn-dl:hover{border-color:var(--c3);box-shadow:var(--g3);}
+.t-display{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--c1);padding:6px 9px;background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.12);border-radius:3px;min-width:108px;text-align:center;margin-right:auto;}
+
+/* EDITOR */
+.editor-wrap{position:relative;background:#010810;}
+.eln{position:absolute;top:13px;left:0;width:30px;text-align:center;color:rgba(0,212,255,0.2);font-size:.72rem;pointer-events:none;}
+#codeInput{width:100%;background:transparent;border:none;outline:none;color:var(--c1);font-family:'Share Tech Mono',monospace;font-size:clamp(.85rem,2.2vw,.98rem);padding:13px 13px 13px 42px;resize:none;height:68px;caret-color:var(--c2);line-height:1.6;}
+#codeInput::selection{background:rgba(0,212,255,0.2);}
+#codeInput::placeholder{color:rgba(0,212,255,0.18);}
+#errorBar{display:none;padding:5px 13px;font-size:.63rem;color:#ff5555;background:rgba(255,30,30,0.07);border-top:1px solid rgba(255,30,30,0.2);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* MIXER */
+.mixer-row{display:flex;gap:9px;flex-wrap:wrap;padding:11px 13px;background:rgba(0,0,0,0.15);}
+.channel{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:78px;padding:9px 7px;border:1px solid var(--border);border-radius:5px;background:rgba(0,0,0,0.3);transition:border-color .2s;}
+.channel:hover{border-color:rgba(0,212,255,0.3);}
+.channel.active{border-color:var(--c1);background:rgba(0,212,255,0.04);}
+.ch-label{font-family:'Orbitron',sans-serif;font-size:.48rem;letter-spacing:.1em;color:var(--text2);}
+.ch-code{width:100%;background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.1);border-radius:3px;color:var(--c1);font-family:'Share Tech Mono',monospace;font-size:.53rem;padding:4px 5px;outline:none;resize:none;height:36px;}
+.ch-vol{width:100%;-webkit-appearance:none;appearance:none;height:3px;background:rgba(0,212,255,0.15);border-radius:2px;outline:none;}
+.ch-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--c1);cursor:pointer;box-shadow:0 0 8px var(--c1);}
+.ch-vol-lbl{font-size:.48rem;color:var(--text2);}
+.ch-toggle{font-family:'Orbitron',sans-serif;font-size:.46rem;padding:3px 7px;border-radius:3px;border:1px solid rgba(0,212,255,0.2);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s;}
+.ch-toggle.on{border-color:var(--c5);color:var(--c5);background:rgba(0,255,157,0.08);}
+.vu-bar{width:100%;height:4px;background:rgba(0,0,0,0.4);border-radius:2px;overflow:hidden;}
+.vu-fill{height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,var(--c5),var(--c3),var(--c2));transition:width .05s;}
+
+/* KNOBS */
+.knobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;}
+.kg{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.kl{font-size:.5rem;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;}
+.kv{font-size:.78rem;color:var(--c1);font-family:'Orbitron',sans-serif;}
+input[type=range].kr{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(0,212,255,0.12);border-radius:2px;outline:none;}
+input[type=range].kr::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--c1);cursor:pointer;box-shadow:0 0 9px var(--c1);}
+
+/* PRESETS */
+.presets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;}
+.preset-card{padding:9px;border:1px solid rgba(255,208,0,0.1);border-radius:4px;background:rgba(0,0,0,0.3);cursor:pointer;transition:all .18s;}
+.preset-card:hover{border-color:var(--c3);background:rgba(255,208,0,0.04);transform:translateY(-2px);box-shadow:0 4px 18px rgba(255,208,0,0.1);}
+.preset-card.active{border-color:var(--c3);background:rgba(255,208,0,0.08);box-shadow:0 0 14px rgba(255,208,0,0.2);}
+.pc-name{font-family:'Orbitron',sans-serif;font-size:.53rem;color:var(--c3);letter-spacing:.1em;margin-bottom:4px;}
+.pc-code{font-size:.5rem;color:rgba(0,212,255,0.45);word-break:break-all;line-height:1.5;}
+.pc-tag{font-size:.46rem;color:var(--text2);margin-top:3px;}
+
+/* KEYBOARD */
+.kb-wrap{overflow-x:auto;padding:11px 9px;scrollbar-width:thin;scrollbar-color:rgba(0,212,255,0.2) transparent;}
+.keyboard{display:flex;gap:3px;min-width:490px;user-select:none;}
+.key{flex:1;height:68px;border-radius:0 0 5px 5px;border:1px solid rgba(0,212,255,0.2);background:rgba(0,28,55,0.7);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:6px;transition:all .1s;position:relative;min-width:26px;}
+.key:hover{background:rgba(0,212,255,0.12);border-color:var(--c1);}
+.key.pressed{background:rgba(0,212,255,0.25);border-color:var(--c1);box-shadow:var(--g1);transform:scaleY(0.95);}
+.key.bk{height:40px;background:rgba(0,4,13,0.95);border-color:rgba(0,212,255,0.1);min-width:18px;margin:0 -9px;z-index:2;border-radius:0 0 4px 4px;}
+.key.bk:hover{background:rgba(0,212,255,0.18);}
+.kn{font-size:.42rem;color:var(--text2);font-family:'Share Tech Mono',monospace;}
+.kf{font-size:.38rem;color:rgba(0,212,255,0.22);}
+
+/* SAVE/LOAD */
+.saves-list{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto;}
+.save-item{display:flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.3);cursor:pointer;transition:all .2s;}
+.save-item:hover{border-color:rgba(0,212,255,0.3);}
+.sname{flex:1;font-size:.68rem;color:var(--text);}
+.stime{font-size:.52rem;color:var(--text2);}
+.sdel{width:19px;height:19px;border-radius:50%;border:1px solid rgba(255,45,120,0.3);background:transparent;color:var(--c2);cursor:pointer;font-size:.58rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.sdel:hover{background:rgba(255,45,120,0.15);border-color:var(--c2);}
+.save-form{display:flex;gap:7px;align-items:center;margin-bottom:9px;}
+.save-input{flex:1;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.72rem;padding:6px 9px;outline:none;}
+.save-input:focus{border-color:rgba(0,212,255,0.4);}
+.bsm{font-family:'Orbitron',sans-serif;font-size:.5rem;letter-spacing:.1em;padding:6px 13px;border-radius:3px;border:1px solid;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.bsc{border-color:var(--c1);color:var(--c1);background:rgba(0,212,255,0.08);}
+.bsc:hover{background:rgba(0,212,255,0.18);box-shadow:var(--g1);}
+.bsm2{border-color:var(--c4);color:var(--c4);background:rgba(162,89,255,0.08);}
+.bsm2:hover{background:rgba(162,89,255,0.18);}
+
+/* ════════════════════════════════════
+   SETTINGS MODAL  ← الجديد!
+════════════════════════════════════ */
+#settingsOverlay{
+  display:none;position:fixed;inset:0;z-index:8000;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
+  align-items:flex-start;justify-content:center;padding-top:40px;
+}
+#settingsOverlay.open{display:flex;}
+#settingsModal{
+  background:#070f22;border:1px solid rgba(0,212,255,0.2);
+  border-radius:12px;width:min(500px,96vw);max-height:85vh;
+  overflow-y:auto;box-shadow:0 0 60px rgba(0,212,255,0.12);
+  animation:modalIn .25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid rgba(0,212,255,0.12);
+  position:sticky;top:0;background:#070f22;z-index:1;
+}
+.modal-title{font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:.18em;color:var(--c1);}
+.modal-close{width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,45,120,0.4);background:transparent;color:var(--c2);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{background:rgba(255,45,120,0.15);border-color:var(--c2);}
+
+/* Setting sections */
+.sett-section{padding:16px 18px;border-bottom:1px solid rgba(0,212,255,0.07);}
+.sett-section:last-child{border-bottom:none;}
+.sett-section-title{font-family:'Orbitron',sans-serif;font-size:.52rem;letter-spacing:.2em;color:var(--text2);text-transform:uppercase;margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid rgba(0,212,255,0.07);}
+
+/* Setting row */
+.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+.srow:last-child{margin-bottom:0;}
+.srow-left{display:flex;align-items:center;gap:10px;flex:1;}
+.srow-icon{width:32px;height:32px;border-radius:8px;background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.srow-info{display:flex;flex-direction:column;gap:2px;}
+.srow-label{font-size:.72rem;color:var(--text);}
+.srow-desc{font-size:.55rem;color:var(--text2);line-height:1.4;}
+.srow-right{flex-shrink:0;}
+
+/* Segment control (like Classic / JS-big buttons in screenshot) */
+.seg-ctrl{display:flex;gap:2px;background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.15);border-radius:5px;padding:2px;}
+.seg-btn{font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:5px 11px;border-radius:3px;border:none;background:transparent;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.seg-btn.active{background:var(--c1);color:var(--bg);box-shadow:var(--g1);}
+.seg-btn:not(.active):hover{color:var(--c1);}
+
+/* Toggle switch */
+.toggle-switch{position:relative;width:44px;height:24px;cursor:pointer;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-track{position:absolute;inset:0;border-radius:24px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.2);transition:all .3s;}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--text2);transition:all .3s;}
+.toggle-switch input:checked~.toggle-track{background:rgba(0,255,157,0.2);border-color:var(--c5);}
+.toggle-switch input:checked~.toggle-thumb{transform:translateX(20px);background:var(--c5);box-shadow:0 0 8px var(--c5);}
+
+/* Slider in settings */
+.sett-slider-wrap{display:flex;flex-direction:column;gap:4px;width:100%;}
+.sett-slider-row{display:flex;align-items:center;gap:10px;}
+.sett-slider{-webkit-appearance:none;appearance:none;flex:1;height:4px;background:rgba(0,212,255,0.15);border-radius:2px;outline:none;}
+.sett-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--c1);cursor:pointer;box-shadow:0 0 10px var(--c1);}
+.sett-val{font-size:.68rem;color:var(--c1);min-width:38px;text-align:left;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:7px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px;font-size:.56rem;color:var(--text2);letter-spacing:.08em;}
+.sled{width:7px;height:7px;border-radius:50%;background:#1a2a1a;display:inline-block;margin-left:5px;transition:all .3s;vertical-align:middle;}
+.sled.on{background:var(--c5);box-shadow:0 0 8px var(--c5);animation:ledP 1s infinite;}
+@keyframes ledP{0%,100%{opacity:1}50%{opacity:.4}}
+::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);border-radius:2px;}
+.fi{animation:fi .4s ease forwards;}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+#toast{position:fixed;bottom:28px;right:18px;background:var(--panel);border:1px solid var(--c5);border-radius:5px;padding:9px 16px;font-size:.68rem;color:var(--c5);box-shadow:0 0 18px rgba(0,255,157,0.2);z-index:9000;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;}
+#toast.show{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="curR"></div>
+<div class="bg-grid"></div><div class="bg-vig"></div>
+<div id="toast"></div>
+
+<!-- ══════════ SETTINGS MODAL ══════════ -->
+<div id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
+<div id="settingsModal">
+  <div class="modal-header">
+    <div class="modal-title">⚙ SETTINGS — الإعدادات</div>
+    <button class="modal-close" onclick="closeSettings()">✕</button>
+  </div>
+
+  <!-- ENGINE -->
+  <div class="sett-section">
+    <div class="sett-section-title">⚡ ENGINE — المحرك</div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">🔲</div>
+        <div class="srow-info">
+          <div class="srow-label">Eval Mode</div>
+          <div class="srow-desc">Classic: متوافق C · JS-big: JavaScript كامل</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <div class="seg-ctrl" id="evalModeCtrl">
+          <button class="seg-btn active" onclick="setSetting('evalMode','classic',this)">Classic</button>
+          <button class="seg-btn" onclick="setSetting('evalMode','jsbig',this)">JS-big</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">📊</div>
+        <div class="srow-info">
+          <div class="srow-label">Output Type</div>
+          <div class="srow-desc">نوع بيانات الخرج الصوتي</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <div class="seg-ctrl" id="outputTypeCtrl">
+          <button class="seg-btn active" onclick="setSetting('outputType','byte',this)">Byte</button>
+          <button class="seg-btn" onclick="setSetting('outputType','signed',this)">Signed</button>
+          <button class="seg-btn" onclick="setSetting('outputType','float',this)">Float</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">🔊</div>
+        <div class="srow-info">
+          <div class="srow-label">Sample Rate</div>
+          <div class="srow-desc">معدل أخذ العينات الصوتية</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <div class="seg-ctrl" id="sampleRateCtrl">
+          <button class="seg-btn" onclick="setSampleRateSetting(44100,this)">44.1k</button>
+          <button class="seg-btn active" onclick="setSampleRateSetting(8000,this)">8 kHz</button>
+          <button class="seg-btn" onclick="setSampleRateSetting(11025,this)">11k</button>
+          <button class="seg-btn" onclick="setSampleRateSetting(22050,this)">22k</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">📦</div>
+        <div class="srow-info">
+          <div class="srow-label">Buffer Size</div>
+          <div class="srow-desc">حجم المخزن المؤقت · أصغر = أقل تأخير</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <div class="seg-ctrl" id="bufferSizeCtrl">
+          <button class="seg-btn" onclick="setSetting('bufferSize',256,this)">256</button>
+          <button class="seg-btn active" onclick="setSetting('bufferSize',512,this)">512</button>
+          <button class="seg-btn" onclick="setSetting('bufferSize',1024,this)">1024</button>
+          <button class="seg-btn" onclick="setSetting('bufferSize',2048,this)">2048</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE -->
+  <div class="sett-section">
+    <div class="sett-section-title">⚡ PERFORMANCE — الأداء</div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">⏱</div>
+        <div class="srow-info">
+          <div class="srow-label">Low-CPU Pre-render</div>
+          <div class="srow-desc">تقليل استهلاك المعالج عبر المعالجة المسبقة</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <label class="toggle-switch">
+          <input type="checkbox" id="lowCpuToggle" checked onchange="setSetting('lowCpu',this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="srow" style="flex-direction:column;align-items:flex-start;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%;margin-bottom:10px;">
+        <div class="srow-icon">🕐</div>
+        <div class="srow-info"><div class="srow-label">Lead Time</div><div class="srow-desc">وقت التقدم في المعالجة</div></div>
+        <span class="sett-val" id="leadTimeVal" style="margin-right:auto;">12s</span>
+      </div>
+      <div class="sett-slider-wrap">
+        <input type="range" class="sett-slider" min="1" max="30" value="12" oninput="document.getElementById('leadTimeVal').textContent=this.value+'s';setSetting('leadTime',+this.value)">
+      </div>
+    </div>
+
+    <div class="srow" style="flex-direction:column;align-items:flex-start;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%;margin-bottom:10px;">
+        <div class="srow-icon">🔉</div>
+        <div class="srow-info"><div class="srow-label">Gain</div><div class="srow-desc">مستوى تضخيم الصوت العام</div></div>
+        <span class="sett-val" id="gainVal" style="margin-right:auto;">1.00</span>
+      </div>
+      <div class="sett-slider-wrap">
+        <input type="range" class="sett-slider" min="0" max="2" step="0.01" value="1" oninput="document.getElementById('gainVal').textContent=parseFloat(this.value).toFixed(2);setGainSetting(+this.value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- VISUAL -->
+  <div class="sett-section">
+    <div class="sett-section-title">🎨 VISUAL — المرئيات</div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">🌊</div>
+        <div class="srow-info">
+          <div class="srow-label">Waveform Color</div>
+          <div class="srow-desc">لون الموجة في الشاشة</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <div class="seg-ctrl">
+          <button class="seg-btn active" onclick="setWaveColor('gradient',this)">Gradient</button>
+          <button class="seg-btn" onclick="setWaveColor('cyan',this)">Cyan</button>
+          <button class="seg-btn" onclick="setWaveColor('magenta',this)">Pink</button>
+          <button class="seg-btn" onclick="setWaveColor('green',this)">Green</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">📺</div>
+        <div class="srow-info">
+          <div class="srow-label">Scanlines</div>
+          <div class="srow-desc">خطوط مسح CRT الكلاسيكية</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <label class="toggle-switch">
+          <input type="checkbox" id="scanlinesToggle" checked onchange="toggleScanlines(this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">🕸</div>
+        <div class="srow-info">
+          <div class="srow-label">BG Grid</div>
+          <div class="srow-desc">شبكة الخلفية المتحركة</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <label class="toggle-switch">
+          <input type="checkbox" id="bgGridToggle" checked onchange="toggleBgGrid(this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">🖱</div>
+        <div class="srow-info">
+          <div class="srow-label">Custom Cursor</div>
+          <div class="srow-desc">المؤشر المخصص (سطح المكتب)</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <label class="toggle-switch">
+          <input type="checkbox" id="cursorToggle" checked onchange="toggleCustomCursor(this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI VISUAL PLANNER -->
+  <div class="sett-section">
+    <div class="sett-section-title">✦ AI VISUAL PLANNER</div>
+    <div class="srow">
+      <div class="srow-left">
+        <div class="srow-icon">✨</div>
+        <div class="srow-info">
+          <div class="srow-label">Auto AI per section</div>
+          <div class="srow-desc">يرسل طلب AI تلقائياً عند كل قسم جديد أثناء التشغيل</div>
+        </div>
+      </div>
+      <div class="srow-right">
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoAiToggle" onchange="setSetting('autoAi',this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="sett-section">
+    <div class="sett-section-title">ℹ ABOUT</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:.65rem;color:var(--text2);">Version</span><span style="font-size:.65rem;color:var(--c1);">3.0 PRO</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:.65rem;color:var(--text2);">Engine</span><span style="font-size:.65rem;color:var(--c1);">Web Audio API</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:.65rem;color:var(--text2);">Preset Count</span><span style="font-size:.65rem;color:var(--c1);" id="aboutPresetCount">16</span></div>
+    </div>
+  </div>
+</div>
+</div>
+<!-- ═══════════════════════════════════ -->
+
+<div class="app">
+<header>
+  <div>
+    <div class="logo">BYTEBEAT</div>
+    <div class="logo-sub">STUDIO PRO v3 ✦ الاستوديو البتي الاحترافي</div>
+  </div>
+  <div class="hpills">
+    <div class="pill pc" id="srPill">8000 Hz</div>
+    <div class="pill pm" id="bpmPill">-- BPM</div>
+    <div class="pill pg" id="livePill">● STANDBY</div>
+    <div class="pill pill-settings" onclick="openSettings()">⚙ SETTINGS</div>
+  </div>
+</header>
+
+<div class="main">
+
+<!-- LEFT -->
+<div class="cl" style="display:flex;flex-direction:column;gap:12px;">
+
+  <!-- VISUALIZER -->
+  <div class="panel fi">
+    <div class="viz-container">
+      <canvas id="mainCanvas"></canvas>
+      <div class="viz-scanlines" id="scanlinesEl"></div>
+      <div class="vc tl" id="vcTL">t = 0</div>
+      <div class="vc tr" id="vcTR">BYTEBEAT v3</div>
+      <div class="vc bl" id="vcBL">8000 Hz</div>
+      <div class="vc br" id="vcBR">0:00</div>
+    </div>
+    <div class="viz-tabs">
+      <button class="vtab active" data-mode="wave">◈ WAVE</button>
+      <button class="vtab" data-mode="bars">▌ BARS</button>
+      <button class="vtab" data-mode="scope">⊙ SCOPE</button>
+      <button class="vtab" data-mode="spectrum">≋ SPECTRUM</button>
+      <button class="vtab" data-mode="matrix">⠿ MATRIX</button>
+      <button class="vtab" data-mode="tunnel">◎ TUNNEL</button>
+    </div>
+    <div class="transport">
+      <button class="tbtn tbtn-play" onclick="startAudio()">▶ PLAY</button>
+      <button class="tbtn tbtn-stop" onclick="stopAudio()">■ STOP</button>
+      <button class="tbtn tbtn-rec" id="btnRec" onclick="toggleRecord()">⏺ REC</button>
+      <button class="tbtn tbtn-dl" id="btnDl" onclick="downloadWAV()" style="display:none">⬇ WAV</button>
+      <div class="t-display" id="tDisplay">t = 0 | 0:00</div>
+    </div>
+    <div class="editor-wrap">
+      <div class="ph" style="border-top:1px solid var(--border);border-bottom:0;">
+        <div class="pt">◈ CODE EDITOR</div>
+        <div style="display:flex;gap:5px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#febc2e;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#28c840;"></div>
+        </div>
+      </div>
+      <div style="position:relative;background:#010810;">
+        <div class="eln">1</div>
+        <textarea id="codeInput" spellcheck="false" placeholder="اكتب معادلة bytebeat...">10*(t>>7|t|t>>6)+4*(t&t>>13|t>>6)</textarea>
+      </div>
+      <div id="errorBar">⚠ خطأ في الكود</div>
+    </div>
+  </div>
+
+  <!-- MIXER -->
+  <div class="panel fi" style="animation-delay:.08s">
+    <div class="ph">
+      <div class="pt">🎚 MIXER — دمج طبقتين</div>
+      <button class="bsm bsc" onclick="applyMix()">▶ دمج</button>
+    </div>
+    <div class="mixer-row">
+      <div class="channel active" id="ch1el">
+        <div class="ch-label">CH-A</div>
+        <textarea class="ch-code" id="ch1code" placeholder="t*(t>>5|t>>8)">t*(t>>5|t>>8)</textarea>
+        <div class="vu-bar"><div class="vu-fill" id="vu1"></div></div>
+        <input type="range" class="ch-vol" id="ch1vol" min="0" max="1" step="0.01" value="0.7" oninput="updateChVol(1,this.value)">
+        <div class="ch-vol-lbl" id="ch1vl">70%</div>
+        <button class="ch-toggle on" id="ch1t" onclick="toggleCh(1)">ON</button>
+      </div>
+      <div class="channel" id="ch2el">
+        <div class="ch-label">CH-B</div>
+        <textarea class="ch-code" id="ch2code" placeholder="t>>4^t>>8|t>>6">t>>4^t>>8|t>>6</textarea>
+        <div class="vu-bar"><div class="vu-fill" id="vu2"></div></div>
+        <input type="range" class="ch-vol" id="ch2vol" min="0" max="1" step="0.01" value="0.5" oninput="updateChVol(2,this.value)">
+        <div class="ch-vol-lbl" id="ch2vl">50%</div>
+        <button class="ch-toggle on" id="ch2t" onclick="toggleCh(2)">ON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEYBOARD -->
+  <div class="panel fi" style="animation-delay:.13s">
+    <div class="ph">
+      <div class="pt">🎹 KEYBOARD</div>
+      <span style="font-size:.52rem;color:var(--text2);">اضغط مفتاح لسماع النوتة</span>
+    </div>
+    <div class="kb-wrap"><div class="keyboard" id="keyboard"></div></div>
+    <div style="padding:7px 13px;font-size:.55rem;color:var(--text2);" id="keyInfo">— لم يُضغط أي مفتاح</div>
+  </div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="cr" style="display:flex;flex-direction:column;gap:12px;">
+
+  <!-- CONTROLS -->
+  <div class="panel fi" style="animation-delay:.04s">
+    <div class="ph"><div class="pt">⚙ CONTROLS</div></div>
+    <div class="pb">
+      <div class="knobs-grid">
+        <div class="kg"><div class="kl">SAMPLE RATE</div><input type="range" class="kr" min="4000" max="44100" value="8000" id="srR" oninput="setSR(+this.value)"><div class="kv" id="srV">8000</div></div>
+        <div class="kg"><div class="kl">VOLUME</div><input type="range" class="kr" min="0" max="1" step="0.01" value="0.7" id="volR" oninput="setVol(+this.value)"><div class="kv" id="volV">70%</div></div>
+        <div class="kg"><div class="kl">SPEED ×</div><input type="range" class="kr" min="0.1" max="4" step="0.05" value="1" id="spdR" oninput="setSpd(+this.value)"><div class="kv" id="spdV">×1.0</div></div>
+        <div class="kg"><div class="kl">PITCH</div><input type="range" class="kr" min="-24" max="24" step="1" value="0" id="pitR" oninput="setPitch(+this.value)"><div class="kv" id="pitV">0</div></div>
+        <div class="kg"><div class="kl">BIT DEPTH</div><input type="range" class="kr" min="1" max="8" step="1" value="8" id="bitR" oninput="setBits(+this.value)"><div class="kv" id="bitV">8</div></div>
+        <div class="kg"><div class="kl">VIZ ZOOM</div><input type="range" class="kr" min="0.5" max="4" step="0.1" value="1" id="zoomR" oninput="setZoom(+this.value)"><div class="kv" id="zoomV">×1.0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE/LOAD -->
+  <div class="panel fi" style="animation-delay:.17s">
+    <div class="ph"><div class="pt">💾 SAVE / LOAD</div></div>
+    <div class="pb">
+      <div class="save-form">
+        <input class="save-input" id="saveName" placeholder="اسم المعادلة..." maxlength="28">
+        <button class="bsm bsc" onclick="saveP()">حفظ</button>
+      </div>
+      <div class="saves-list" id="savesList"></div>
+    </div>
+  </div>
+
+  <!-- SHARE -->
+  <div class="panel fi" style="animation-delay:.2s">
+    <div class="ph"><div class="pt">🔗 SHARE</div></div>
+    <div class="pb" style="display:flex;flex-direction:column;gap:7px;">
+      <button class="bsm bsc" style="width:100%" onclick="copyLink()">📋 نسخ رابط dollchan</button>
+      <button class="bsm bsm2" style="width:100%" onclick="copyCode()">⎘ نسخ الكود</button>
+      <div style="font-size:.56rem;color:var(--text2);line-height:1.6;" id="shareInfo">الكود جاهز للمشاركة</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRESETS FULL ROW -->
+<div class="fr panel fi" style="animation-delay:.25s">
+  <div class="ph">
+    <div class="pt">⚡ PRESETS</div>
+    <span style="font-size:.52rem;color:var(--text2);" id="presetCount"></span>
+  </div>
+  <div class="pb"><div class="presets-grid" id="presetsGrid"></div></div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  <div><span class="sled" id="sled"></span><span id="stxt">STANDBY</span></div>
+  <div>BYTEBEAT STUDIO PRO v3</div>
+  <div id="ftr">Web Audio API · HTML5</div>
+</footer>
+</div><!-- /app -->
+
+<script>
+/* ════ CURSOR ════ */
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function ac(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(ac);})();
+document.addEventListener('mousedown',()=>{cur.style.width='6px';cur.style.height='6px';curR.style.width='38px';curR.style.height='38px';});
+document.addEventListener('mouseup',()=>{cur.style.width='9px';cur.style.height='9px';curR.style.width='28px';curR.style.height='28px';});
+
+/* ════ SETTINGS ════ */
+const SETTINGS={evalMode:'classic',outputType:'byte',sampleRateSetting:8000,bufferSize:512,lowCpu:true,leadTime:12,gain:1,autoAi:false,waveColor:'gradient'};
+function openSettings(){document.getElementById('settingsOverlay').classList.add('open');}
+function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open');}
+function setSetting(k,v,btn){
+  SETTINGS[k]=v;
+  if(btn){
+    const ctrl=btn.closest('.seg-ctrl');
+    if(ctrl) ctrl.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  if(k==='bufferSize'&&isPlaying){stopAudio();startAudio();}
+  toast('✦ '+k+' → '+v);
+}
+function setSampleRateSetting(v,btn){
+  SETTINGS.sampleRateSetting=v;
+  sampleRate=v;
+  document.getElementById('srR').value=v;
+  document.getElementById('srV').textContent=v;
+  document.getElementById('srPill').textContent=v+' Hz';
+  document.getElementById('vcBL').textContent=v+' Hz';
+  if(btn){const c=btn.closest('.seg-ctrl');c.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  if(isPlaying){stopAudio();startAudio();}
+  toast('Sample Rate → '+v+' Hz');
+}
+function setGainSetting(v){SETTINGS.gain=v;if(gainNode)gainNode.gain.value=volume*v;}
+function setWaveColor(c,btn){
+  SETTINGS.waveColor=c;
+  if(btn){const ctrl=btn.closest('.seg-ctrl');ctrl.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  toast('Wave color → '+c);
+}
+function toggleScanlines(v){document.getElementById('scanlinesEl').style.display=v?'':'none';}
+function toggleBgGrid(v){document.querySelector('.bg-grid').style.display=v?'':'none';}
+function toggleCustomCursor(v){
+  document.body.style.cursor=v?'none':'auto';
+  cur.style.display=v?'block':'none';
+  curR.style.display=v?'block':'none';
+}
+
+/* ════ STATE ════ */
+let audioCtx=null,scriptNode=null,gainNode=null,analyser=null;
+let t=0,isPlaying=false,isMixMode=false;
+let sampleRate=8000,volume=0.7,speed=1,pitchShift=0,bitDepth=8,vizZoom=1;
+let vizMode='wave',waveColor='gradient';
+let vizBuf=new Float32Array(1024),vizIdx=0;
+let startTime=0,ch1On=true,ch2On=true,ch1Vol=0.7,ch2Vol=0.5;
+let isRecording=false,recChunks=[];
+let userSaves=[];
+let matrixCols=[];
+let activePreset=null;
+try{userSaves=JSON.parse(localStorage.getItem('bb_saves')||'[]');}catch(e){userSaves=[];}
+
+/* ════ PRESETS ════ */
+const PRESETS=[
+  {name:"YO TRACK",   code:"10*(t>>7|t|t>>6)+4*(t&t>>13|t>>6)", tag:"⭐"},
+  {name:"CLASSIC",    code:"t*(t>>5|t>>8)",                       tag:"بسيط"},
+  {name:"ACID BASS",  code:"(t>>4|t&t>>5)*3",                     tag:"باس"},
+  {name:"GLITCH",     code:"t>>4^t>>8|t>>6",                      tag:"جلتش"},
+  {name:"MELODY",     code:"((t*3)&(t>>5)|(t*2)&(t>>8))",         tag:"لحن"},
+  {name:"SPACE",      code:"t*(t>>11&t>>8&123&t>>3)",              tag:"فضاء"},
+  {name:"DRUM KICK",  code:"(t%128<64?t*(t>>3):0)|(t>>4^t>>8)",   tag:"إيقاع"},
+  {name:"DEEP LOW",   code:"(t>>3&t>>8)*3|(t>>10)",               tag:"عميق"},
+  {name:"CHAOS",      code:"t*(t>>9|t>>13)&46&t>>8",              tag:"فوضى"},
+  {name:"RETRO RPG",  code:"(t>>7^t>>8)*(t>>4|t>>7)",             tag:"ريترو"},
+  {name:"THUNDER",    code:"t*(t>>16|t>>8)&255",                   tag:"رعد"},
+  {name:"RAVE",       code:"((t>>3)|(t>>2))*((t>>11)&7)",          tag:"ريف"},
+  {name:"GHOST",      code:"t*(t>>4^t>>9^t>>6)&(t>>5|t>>9)",      tag:"غريب"},
+  {name:"CHIP TUNE",  code:"(t*(t>>5|t>>8)>>1)+(t*(t>>11)>>1)",   tag:"شيب"},
+  {name:"PULSE",      code:"(t>>6^t>>7&t>>4)*(t>>9|5)",           tag:"نبضة"},
+  {name:"DREAMY",     code:"t*((t>>12|t>>8)&63&t>>4)",            tag:"حالم"},
+];
+
+function buildPresets(){
+  const g=document.getElementById('presetsGrid');g.innerHTML='';
+  PRESETS.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='preset-card'+(activePreset===i?' active':'');
+    d.innerHTML=`<div class="pc-name">${p.name}</div><div class="pc-code">${p.code}</div><div class="pc-tag">${p.tag}</div>`;
+    d.onclick=()=>{
+      document.getElementById('codeInput').value=p.code;
+      activePreset=i;isMixMode=false;buildPresets();
+      if(isPlaying){stopAudio();startAudio();}
+      toast('⚡ '+p.name);
+    };
+    g.appendChild(d);
+  });
+  document.getElementById('presetCount').textContent=PRESETS.length+' presets';
+  document.getElementById('aboutPresetCount').textContent=PRESETS.length;
+}
+buildPresets();
+
+/* ════ AUDIO ENGINE ════ */
+function getOutputScale(){
+  if(SETTINGS.outputType==='float') return {div:1,off:0};
+  if(SETTINGS.outputType==='signed') return {div:128,off:0};
+  return {div:128,off:-1}; // byte default
+}
+
+function getFn(code){
+  try{
+    let expr=code;
+    // Classic mode: wrap safely
+    const fn=new Function('t',`"use strict";try{return ((${expr}))&${Math.pow(2,bitDepth)-1};}catch(e){return 0;}`);
+    fn(0);
+    document.getElementById('errorBar').style.display='none';
+    return fn;
+  }catch(e){
+    document.getElementById('errorBar').style.display='block';
+    document.getElementById('errorBar').textContent='⚠ '+e.message;
+    return null;
+  }
+}
+
+function startAudio(){
+  stopAudio();
+  const code=document.getElementById('codeInput').value.trim()||'0';
+  const fn=getFn(code);
+  if(!fn) return;
+
+  try{
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)({sampleRate:44100});
+  }catch(e){toast('⚠ Web Audio غير مدعوم');return;}
+
+  gainNode=audioCtx.createGain();
+  gainNode.gain.value=volume*SETTINGS.gain;
+  analyser=audioCtx.createAnalyser();
+  analyser.fftSize=2048;
+  gainNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
+
+  const bufSize=SETTINGS.bufferSize;
+  scriptNode=audioCtx.createScriptProcessor(bufSize,0,1);
+  const ratio=44100/sampleRate;
+  let phase=0;
+  const pitchR=Math.pow(2,pitchShift/12);
+  const maxVal=Math.pow(2,bitDepth)-1;
+  const scale=getOutputScale();
+
+  scriptNode.onaudioprocess=e=>{
+    const out=e.outputBuffer.getChannelData(0);
+    const cf1=getFn(isMixMode?document.getElementById('ch1code').value:document.getElementById('codeInput').value)||fn;
+    const cf2=isMixMode?getFn(document.getElementById('ch2code').value):null;
+    for(let i=0;i<bufSize;i++){
+      phase+=speed*pitchR;
+      if(phase>=ratio){phase-=ratio;t+=1;}
+      let s1=(cf1(t)/scale.div+scale.off)*(ch1On?ch1Vol:0);
+      let s2=cf2?((cf2(t)/scale.div+scale.off)*(ch2On?ch2Vol:0)):0;
+      const sample=isMixMode?(s1+s2)*0.65:s1;
+      out[i]=Math.max(-1,Math.min(1,sample));
+      vizBuf[vizIdx&1023]=out[i];vizIdx++;
+    }
+    // VU update (throttled)
+    if(vizIdx%1024<bufSize){
+      let v1=0;
+      for(let i=Math.max(0,bufSize-32);i<bufSize;i++) v1=Math.max(v1,Math.abs(out[i]));
+      document.getElementById('vu1').style.width=(v1*100)+'%';
+      if(isMixMode) document.getElementById('vu2').style.width=(Math.random()*ch2Vol*90)+'%';
+    }
+    updateHUD();
+  };
+
+  scriptNode.connect(gainNode);
+  isPlaying=true;startTime=Date.now();
+  document.getElementById('sled').classList.add('on');
+  document.getElementById('stxt').textContent='PLAYING';
+  document.getElementById('livePill').textContent='● LIVE';
+  document.getElementById('livePill').classList.add('on');
+}
+
+function stopAudio(){
+  if(scriptNode){try{scriptNode.disconnect();}catch(e){}scriptNode=null;}
+  if(gainNode){try{gainNode.disconnect();}catch(e){}gainNode=null;}
+  if(audioCtx){try{audioCtx.close();}catch(e){}audioCtx=null;}
+  analyser=null;isPlaying=false;
+  document.getElementById('sled').classList.remove('on');
+  document.getElementById('stxt').textContent='STANDBY';
+  document.getElementById('livePill').textContent='● STANDBY';
+  document.getElementById('livePill').classList.remove('on');
+  document.getElementById('vu1').style.width='0%';
+  document.getElementById('vu2').style.width='0%';
+  if(isRecording){isRecording=false;finishRecord();}
+}
+
+function applyMix(){isMixMode=true;startAudio();toast('🎚 تشغيل المزج');}
+
+function toggleCh(n){
+  if(n===1){ch1On=!ch1On;const b=document.getElementById('ch1t');b.textContent=ch1On?'ON':'OFF';b.classList.toggle('on',ch1On);document.getElementById('ch1el').classList.toggle('active',ch1On);}
+  else{ch2On=!ch2On;const b=document.getElementById('ch2t');b.textContent=ch2On?'ON':'OFF';b.classList.toggle('on',ch2On);document.getElementById('ch2el').classList.toggle('active',ch2On);}
+}
+function updateChVol(n,v){
+  if(n===1){ch1Vol=+v;document.getElementById('ch1vl').textContent=Math.round(v*100)+'%';}
+  else{ch2Vol=+v;document.getElementById('ch2vl').textContent=Math.round(v*100)+'%';}
+}
+
+/* ════ CONTROLS ════ */
+function setSR(v){sampleRate=v;document.getElementById('srV').textContent=v;document.getElementById('srPill').textContent=v+' Hz';document.getElementById('vcBL').textContent=v+' Hz';if(isPlaying){stopAudio();startAudio();}}
+function setVol(v){volume=v;document.getElementById('volV').textContent=Math.round(v*100)+'%';if(gainNode)gainNode.gain.value=v*SETTINGS.gain;}
+function setSpd(v){speed=v;document.getElementById('spdV').textContent='×'+v.toFixed(2);}
+function setPitch(v){pitchShift=v;document.getElementById('pitV').textContent=(v>0?'+':'')+v;if(isPlaying){stopAudio();startAudio();}}
+function setBits(v){bitDepth=v;document.getElementById('bitV').textContent=v;if(isPlaying){stopAudio();startAudio();}}
+function setZoom(v){vizZoom=v;document.getElementById('zoomV').textContent='×'+v.toFixed(1);}
+
+function updateHUD(){
+  const e=(Date.now()-startTime)/1000;
+  const m=String(Math.floor(e/60)).padStart(2,'0'),s=String(Math.floor(e%60)).padStart(2,'0');
+  document.getElementById('vcTL').textContent='t = '+t.toLocaleString();
+  document.getElementById('vcBR').textContent=m+':'+s;
+  document.getElementById('tDisplay').textContent='t = '+t.toLocaleString()+' | '+m+':'+s;
+  document.getElementById('bpmPill').textContent=Math.round(sampleRate*speed*60/512)+' BPM';
+}
+
+/* ════ RECORD → WAV ════ */
+function toggleRecord(){
+  if(!isPlaying){toast('▶ شغّل أولاً');return;}
+  isRecording=!isRecording;
+  const btn=document.getElementById('btnRec');
+  btn.classList.toggle('recording',isRecording);
+  btn.textContent=isRecording?'⏹ STOP':'⏺ REC';
+  if(isRecording){recChunks=[];toast('🔴 يسجّل...');}
+  else finishRecord();
+}
+function finishRecord(){
+  if(!recChunks.length) return;
+  const sr=44100,ns=recChunks.length;
+  const ab=new ArrayBuffer(44+ns*2),v=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');v.setUint32(4,36+ns*2,true);ws(8,'WAVE');ws(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
+  ws(36,'data');v.setUint32(40,ns*2,true);
+  for(let i=0;i<ns;i++){const sv=Math.max(-1,Math.min(1,recChunks[i]));v.setInt16(44+i*2,sv<0?sv*0x8000:sv*0x7FFF,true);}
+  window._wavBlob=new Blob([ab],{type:'audio/wav'});
+  window._wavName=(document.getElementById('codeInput').value.trim().slice(0,18)||'bytebeat')+'.wav';
+  document.getElementById('btnDl').style.display='';
+  toast('✅ WAV جاهز للتحميل!');
+}
+function downloadWAV(){
+  if(!window._wavBlob) return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(window._wavBlob);a.download=window._wavName;a.click();
+  toast('⬇ جاري التحميل...');
+}
+
+/* ════ SAVE/LOAD ════ */
+function saveP(){
+  const name=document.getElementById('saveName').value.trim()||'preset_'+Date.now();
+  const code=document.getElementById('codeInput').value.trim();
+  if(!code){toast('⚠ الكود فارغ');return;}
+  userSaves.unshift({name,code,time:new Date().toLocaleTimeString('ar')});
+  if(userSaves.length>25)userSaves.pop();
+  try{localStorage.setItem('bb_saves',JSON.stringify(userSaves));}catch(e){}
+  renderSaves();toast('💾 '+name);
+  document.getElementById('saveName').value='';
+}
+function loadSave(i){document.getElementById('codeInput').value=userSaves[i].code;isMixMode=false;if(isPlaying){stopAudio();startAudio();}toast('📂 '+userSaves[i].name);}
+function deleteSave(i){if(confirm('حذف "'+userSaves[i].name+'"؟')){userSaves.splice(i,1);try{localStorage.setItem('bb_saves',JSON.stringify(userSaves));}catch(e){}renderSaves();}}
+function renderSaves(){
+  const el=document.getElementById('savesList');el.innerHTML='';
+  if(!userSaves.length){el.innerHTML='<div style="font-size:.6rem;color:var(--text2);text-align:center;padding:8px;">لا توجد حفظات</div>';return;}
+  userSaves.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='save-item';
+    d.innerHTML=`<div class="sname">${s.name}</div><div class="stime">${s.time}</div><button class="sdel">×</button>`;
+    d.querySelector('.sdel').onclick=ev=>{ev.stopPropagation();deleteSave(i);};
+    d.onclick=()=>loadSave(i);
+    el.appendChild(d);
+  });
+}
+renderSaves();
+
+/* ════ SHARE ════ */
+function copyLink(){
+  const code=document.getElementById('codeInput').value.trim();
+  const enc=btoa(unescape(encodeURIComponent(code)));
+  const link=`https://dollchan.net/bytebeat/#${enc}`;
+  navigator.clipboard.writeText(link).catch(()=>{});
+  document.getElementById('shareInfo').textContent=link.slice(0,55)+'...';
+  toast('📋 تم نسخ الرابط!');
+}
+function copyCode(){
+  navigator.clipboard.writeText(document.getElementById('codeInput').value.trim()).catch(()=>{});
+  toast('⎘ تم نسخ الكود!');
+}
+
+/* ════ KEYBOARD ════ */
+const NOTES=[
+  {n:'C4',f:261.63},{n:'C#4',f:277.18,b:1},{n:'D4',f:293.66},{n:'D#4',f:311.13,b:1},
+  {n:'E4',f:329.63},{n:'F4',f:349.23},{n:'F#4',f:369.99,b:1},{n:'G4',f:392.00},
+  {n:'G#4',f:415.30,b:1},{n:'A4',f:440.00},{n:'A#4',f:466.16,b:1},{n:'B4',f:493.88},
+  {n:'C5',f:523.25},{n:'C#5',f:554.37,b:1},{n:'D5',f:587.33},{n:'D#5',f:622.25,b:1},
+  {n:'E5',f:659.25},
+];
+const kb=document.getElementById('keyboard');
+NOTES.forEach(n=>{
+  const k=document.createElement('div');
+  k.className='key'+(n.b?' bk':'');
+  k.innerHTML=`<div class="kn">${n.n}</div><div class="kf">${Math.round(n.f)}</div>`;
+  k.onclick=()=>{
+    document.getElementById('keyInfo').textContent=`♪ ${n.n} — ${n.f}Hz — مضاعف: ${Math.round(n.f/sampleRate*256)}`;
+    k.classList.add('pressed');setTimeout(()=>k.classList.remove('pressed'),180);
+    if(audioCtx){
+      try{
+        const osc=audioCtx.createOscillator(),g=audioCtx.createGain();
+        osc.frequency.value=n.f;g.gain.value=0.18;
+        osc.connect(g);g.connect(audioCtx.destination);
+        osc.start();g.gain.setTargetAtTime(0,audioCtx.currentTime+0.12,0.04);
+        setTimeout(()=>{try{osc.stop();}catch(e){}},380);
+      }catch(e){}
+    } else {
+      toast('▶ شغّل الصوت أولاً لسماع النوتة');
+    }
+  };
+  kb.appendChild(k);
+});
+
+/* ════ VISUALIZER ════ */
+const canvas=document.getElementById('mainCanvas');
+const ctx=canvas.getContext('2d');
+
+document.querySelectorAll('.vtab').forEach(b=>{
+  b.onclick=()=>{
+    vizMode=b.dataset.mode;
+    document.querySelectorAll('.vtab').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  };
+});
+
+function initMatrix(){
+  matrixCols=[];
+  const cols=Math.floor(canvas.width/13);
+  for(let i=0;i<cols;i++) matrixCols.push({x:i*13,y:Math.random()*canvas.height,spd:1+Math.random()*2});
+}
+
+function getWaveGrad(W){
+  const wc=SETTINGS.waveColor;
+  if(wc==='cyan') return '#00d4ff';
+  if(wc==='magenta') return '#ff2d78';
+  if(wc==='green') return '#00ff9d';
+  const g=ctx.createLinearGradient(0,0,W,0);
+  g.addColorStop(0,'#ff2d78');g.addColorStop(0.35,'#00d4ff');g.addColorStop(0.7,'#a259ff');g.addColorStop(1,'#ffd000');
+  return g;
+}
+
+function drawViz(){
+  requestAnimationFrame(drawViz);
+  const W=canvas.width,H=canvas.height;
+  const buf=vizBuf,len=1024,z=vizZoom;
+
+  if(vizMode==='matrix'){
+    ctx.fillStyle='rgba(2,5,14,0.16)';ctx.fillRect(0,0,W,H);
+    ctx.font='11px Share Tech Mono';
+    matrixCols.forEach(c=>{
+      const hex=Math.floor(Math.random()*256).toString(16).padStart(2,'0').toUpperCase();
+      ctx.fillStyle=`rgba(0,212,255,${isPlaying?(.2+Math.random()*.7):.12})`;
+      ctx.fillText(hex,c.x,c.y);
+      c.y+=c.spd*(isPlaying?1.8:.28);
+      if(c.y>H){c.y=-14;c.spd=1+Math.random()*2;}
+    });
+    return;
+  }
+
+  ctx.fillStyle='rgba(1,5,14,0.97)';ctx.fillRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(0,212,255,0.04)';ctx.lineWidth=1;
+  for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(0,H*i/4);ctx.lineTo(W,H*i/4);ctx.stroke();}
+  for(let i=1;i<4;i++){ctx.beginPath();ctx.moveTo(W*i/4,0);ctx.lineTo(W*i/4,H);ctx.stroke();}
+
+  if(!isPlaying){
+    ctx.beginPath();ctx.strokeStyle='rgba(0,212,255,0.18)';ctx.lineWidth=1;
+    ctx.setLineDash([5,10]);ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();ctx.setLineDash([]);
+    return;
+  }
+
+  if(vizMode==='wave'){
+    // glow
+    ctx.beginPath();ctx.strokeStyle='rgba(0,212,255,0.07)';ctx.lineWidth=9;
+    for(let i=0;i<W;i++){const idx=(vizIdx-Math.floor(W/z)+Math.floor(i/z)+len)&(len-1);const y=H/2-buf[idx]*H*.44;i===0?ctx.moveTo(i,y):ctx.lineTo(i,y);}
+    ctx.stroke();
+    // main
+    ctx.beginPath();ctx.strokeStyle=getWaveGrad(W);ctx.lineWidth=2;
+    for(let i=0;i<W;i++){const idx=(vizIdx-Math.floor(W/z)+Math.floor(i/z)+len)&(len-1);const y=H/2-buf[idx]*H*.44;i===0?ctx.moveTo(i,y):ctx.lineTo(i,y);}
+    ctx.stroke();
+    // fill
+    ctx.beginPath();
+    for(let i=0;i<W;i++){const idx=(vizIdx-Math.floor(W/z)+Math.floor(i/z)+len)&(len-1);const y=H/2-buf[idx]*H*.44;i===0?ctx.moveTo(i,y):ctx.lineTo(i,y);}
+    ctx.lineTo(W,H/2);ctx.lineTo(0,H/2);ctx.closePath();
+    const gf=ctx.createLinearGradient(0,0,0,H);gf.addColorStop(0,'rgba(0,212,255,0.07)');gf.addColorStop(1,'transparent');
+    ctx.fillStyle=gf;ctx.fill();
+
+  }else if(vizMode==='bars'){
+    const bars=Math.floor(W/5),bw=W/bars-1;
+    for(let i=0;i<bars;i++){
+      let sum=0,chunk=Math.ceil(len/bars);
+      for(let j=0;j<chunk;j++) sum+=Math.abs(buf[(Math.floor(i*len/bars)+j)&(len-1)]);
+      const h=(sum/chunk)*H*.95*z;
+      const hue=(i/bars)*240;
+      const gbar=ctx.createLinearGradient(0,H,0,H-h);
+      gbar.addColorStop(0,`hsla(${190+hue},100%,55%,.9)`);gbar.addColorStop(1,`hsla(${hue},100%,65%,.3)`);
+      ctx.fillStyle=gbar;ctx.fillRect(i*(bw+1),H-h,bw,h);
+      ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillRect(i*(bw+1),H-h-2,bw,2);
+    }
+
+  }else if(vizMode==='scope'){
+    const half=Math.floor(len/2);
+    ctx.strokeStyle='rgba(0,212,255,0.04)';ctx.lineWidth=1;
+    for(let r=20;r<H*.5;r+=24){ctx.beginPath();ctx.arc(W/2,H/2,r,0,Math.PI*2);ctx.stroke();}
+    ctx.strokeStyle='rgba(255,45,120,.1)';ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+    for(let i=1;i<half;i++){
+      const x=W/2+buf[(vizIdx-half+i+len)&(len-1)]*W*.44*z;
+      const y=H/2-buf[(vizIdx-half+i+1+len)&(len-1)]*H*.44*z;
+      const px=W/2+buf[(vizIdx-half+i-1+len)&(len-1)]*W*.44*z;
+      const py=H/2-buf[(vizIdx-half+i+len)&(len-1)]*H*.44*z;
+      const a=i/half;
+      ctx.strokeStyle=`hsla(${190+a*160},100%,60%,${a*.9})`;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();
+    }
+
+  }else if(vizMode==='spectrum'){
+    if(analyser){
+      const fd=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(fd);
+      const bw=W/fd.length;
+      for(let i=0;i<fd.length;i++){
+        const h=(fd[i]/255)*H*.95;const hue=i/fd.length*270;
+        ctx.fillStyle=`hsla(${200+hue},100%,60%,.85)`;ctx.fillRect(i*bw,H-h,Math.max(1,bw-.5),h);
+      }
+    }else{
+      // fallback if no analyser
+      const bars=64,bw=W/bars-1;
+      for(let i=0;i<bars;i++){
+        const h=Math.abs(buf[(vizIdx-i*4+len)&(len-1)])*H*.9;
+        ctx.fillStyle=`hsla(${190+i*4},100%,60%,.8)`;ctx.fillRect(i*(bw+1),H-h,bw,h);
+      }
+    }
+
+  }else if(vizMode==='tunnel'){
+    const cx=W/2,cy=H/2,rings=22;
+    for(let r=0;r<rings;r++){
+      const idx=(vizIdx-r*4+len)&(len-1);
+      const amp=Math.abs(buf[idx]);
+      const radius=(r/rings)*(Math.min(W,H)*.5)*z*(1+amp*.5);
+      const hue=(r/rings)*300+(Date.now()/25)%360;
+      ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);
+      ctx.strokeStyle=`hsla(${hue},100%,60%,${(1-r/rings)*.65})`;ctx.lineWidth=2;ctx.stroke();
+    }
+  }
+}
+
+function resizeCanvas(){canvas.width=canvas.offsetWidth;canvas.height=190;initMatrix();}
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();drawViz();
+
+/* ════ TOAST ════ */
+let _tt;
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2600);
+}
+
+/* ════ CODE INPUT listener ════ */
+document.getElementById('codeInput').addEventListener('input',()=>{
+  activePreset=null;buildPresets();
+});
+</script>
+</body>
+</html>
